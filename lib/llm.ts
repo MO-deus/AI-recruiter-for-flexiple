@@ -75,6 +75,16 @@ async function callLLMRaw(
       };
     }
 
+    if (error.status === 401 || error.message?.includes('401') || error.message?.toLowerCase().includes('user not found')) {
+      return {
+        text: '',
+        error: {
+          kind: 'unknown',
+          message: 'Invalid API key — check your OPENROUTER_API_KEY in .env and restart the server.',
+        },
+      };
+    }
+
     if (error.status === 429 || error.message?.includes('429') || error.message?.toLowerCase().includes('rate limit')) {
       const retryAfter = error.headers?.['retry-after'];
       const retrySeconds = retryAfter ? parseInt(retryAfter, 10) : 60;
